@@ -1,12 +1,6 @@
 #!/bin/sh
 
-export RED='\033[0;31m'
-export GREEN='\033[0;32m'
-export BLUE='\033[0;34m'
-export NC='\033[0m'
-
-export SSH_SRV='rh1521@shell1.doc.ic.ac.uk'
-export SSH_DIR='~/bu-output'
+source /env.sh
 
 sleep 1
 
@@ -18,17 +12,29 @@ echo -e "${RED}Press ENTER to interrupt boot...${NC}"
 read -t 1 ans	# 1 seconds delay to wait for input
 
 if [ $? == 0 ]; then
-	echo -e "${BLUE}Boot interrupted.${NC}"
+	echo -e "${BLUE}Entering initramfs.${NC}"
+
+	mkdir -p /dev/pts
+	mount -t tmpfs /dev/pts
+
+	ifconfig eth0 hw ether 12:34:56:78:90:FF
+	udhcpc
+
+	dropbear -r /etc/dropbear_ed25519_host_key -RBE
+
 	while [ true ]; do
+
 		# Spawn shell with job control on ttyS0
 		# For more info, see busybox cttyhack
 		setsid sh -c 'exec sh </dev/ttyS0 >/dev/ttyS0 2>&1'
 		echo -e "${BLUE}Shell respawned. Use 'reboot -f' or 'halt -f' to restart/shutdown the system.${NC}"
+
 	done
 else
 	echo -e "${GREEN}Switching from initramfs to real root...${NC}"
-	mount /dev/mmcblk0p2 /newroot
-	mount --move /dev /newroot/dev
-	mount --move /proc /newroot/proc
-	exec switch_root -c /dev/ttyS0 /newroot /sbin/init
+	mount /dev/mmcblk0p2 /mnt
+	mount --move /dev /mnt/dev
+	mount --move /proc /mnt/proc
+	exec switch_root -c /dev/ttyS0 /mnt /sbin/init
 fi
+
