@@ -1,9 +1,10 @@
 #!/bin/sh
 
-echo "ERROR: copy_initramfs.sh not ready. Please fix relative paths!"
+IP=$1	# path to outputs/images directory
+#EP=$2	# path to external tree
+EP=$BR2_EXTERNAL_V3S3_PATH
 
-exit 1
+echo "Copying initramfs images to ${EP}/board/licheepi/initramfs"
+cp $IP/rootfs.cpio.gz $EP/board/licheepi/initramfs/initramfs.cpio.gz
+cp $IP/rootfs.cpio.uboot $EP/board/licheepi/initramfs/initramfs.cpio.uboot
 
-echo "Copying initramfs images to board/licheepi/initramfs..."
-cp output/images/rootfs.cpio.gz board/licheepi/initramfs/initramfs.cpio.gz
-cp output/images/rootfs.cpio.uboot board/licheepi/initramfs/initramfs.cpio.uboot
