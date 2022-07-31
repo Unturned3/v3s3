@@ -1,3 +1,3 @@
 # Uncomment lines if needed
-#source "$BR2_EXTERNAL_V3S3_PATH/package/foo_bar/Config.in"
+source "$BR2_EXTERNAL_V3S3_PATH/package/libcedarc/Config.in"
 
