@@ -116,7 +116,6 @@
 */
 
 // OV5640
-/*
 &csi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&csi1_8bit_pins>;
@@ -168,4 +167,4 @@
 		};
 	};
 };
-*/
+
