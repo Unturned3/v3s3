@@ -2,8 +2,6 @@
 
 source /env.sh
 
-sleep 1
-
 echo -e "${BLUE}Executing /init script${NC}"
 mount -t devtmpfs dev /dev	# devtmpfs is NOT auto-mounted by kernel in initramfs
 mount -t proc proc /proc	# Must mount /proc to mount real root later
