@@ -323,6 +323,7 @@
 			#phy-cells = <1>;
 		};
 
+		/*
 		ohci0: usb@01c1a400 {
 			compatible = "allwinner,sun8i-v3s-ohci", "generic-ohci";
 			reg = <0x01c1a400 0x100>;
@@ -332,6 +333,7 @@
 			resets = <&ccu RST_BUS_EHCI0>, <&ccu RST_BUS_OHCI0>;
 			status = "disabled";
 		};
+		*/
 
 		ehci0: usb@01c1a000 {
 			compatible = "allwinner,sun8i-v3s-ehci", "generic-ehci";
@@ -444,6 +446,7 @@
 			interrupts = <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
 		};
 
+		/*
 		pwm: pwm@1c21400 {
 			compatible = "allwinner,sun8i-v3s-pwm",
 				     "allwinner,sun7i-a20-pwm";
@@ -452,13 +455,16 @@
 			#pwm-cells = <3>;
 			status = "disabled";
 		};
+		*/
 
+		/*
 		lradc: lradc@1c22800 {
 			compatible = "allwinner,sun4i-a10-lradc-keys";
 			reg = <0x01c22800 0x400>;
 			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
+		*/
 
 		/*
 		codec: codec@01c22c00 {

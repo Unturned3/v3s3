@@ -41,6 +41,7 @@
 	status = "okay";
 };
 
+/*
 &lradc {
 	vref-supply = <&reg_vcc3v0>;
 	status = "okay";
@@ -73,4 +74,5 @@
 		voltage = <800000>;
 	};
 };
+*/
 
