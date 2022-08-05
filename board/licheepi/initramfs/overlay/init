@@ -16,7 +16,7 @@ if [ $? == 0 ]; then
 	mount -t tmpfs /dev/pts
 
 	ifconfig eth0 hw ether 12:34:56:78:90:FF
-	udhcpc
+	udhcpc &
 
 	dropbear -r /etc/dropbear_ed25519_host_key -RBE
 
