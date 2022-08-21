@@ -10,5 +10,5 @@ This repo contains a buildroot external tree, tailored to the V3s/S3/S3L SoCs fr
 - Ethernet
 - USB
 - Camera interfaces (both DVP and MIPI CSI-2)
-- H.264 B/M/HP video encoding, up to 720p 60fps
+- H.264 baseline/main/high profile video encoding, up to 720p @ 60fps or 1080p @ 30fps (demo programs coming soon)
 
