@@ -152,9 +152,9 @@
 		clocks = <&ccu CLK_CSI1_MCLK>;
 		clock-names = "xclk";
 
-		//AVDD-supply = <&reg_ldo3>;
-		//DOVDD-supply = <&reg_ldo3>;
-		//DVDD-supply = <&reg_ldo4>;
+		AVDD-supply = <&reg_vcc2v8>;
+		DOVDD-supply = <&reg_vcc2v8>;
+		DVDD-supply = <&reg_vcc1v8>;
 		//reset-gpios = <&pio 4 23 GPIO_ACTIVE_LOW>;			// PE23
 		//powerdown-gpios = <&pio 4 24 GPIO_ACTIVE_HIGH>;		// PE24
 
