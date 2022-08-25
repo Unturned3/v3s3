@@ -1,3 +1,11 @@
 # Uncomment lines if needed
 source "$BR2_EXTERNAL_V3S3_PATH/package/libcedarc/Config.in"
 
+config BR2_EXTERNAL_ENABLE_INITRAMFS
+	bool "Include pre-built initramfs image"
+	default n
+	help
+		Enable the inclusion of an initramfs image in the rootfs. The initramfs
+		image is built via 'make licheepi_zero_initramfs_defconfig'. For more
+		information, see the Github repo.
+
