@@ -3045,7 +3045,7 @@ index 000000000..8e3bd3a61
 +
 +static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)
 +{
-+	void *addr = vm_map_ram(pages, num, -1, pgprot);
++	void *addr = vm_map_ram(pages, num, -1);
 +
 +	if (!addr)
 +		return -ENOMEM;
@@ -3347,7 +3347,7 @@ index 000000000..46b2bb99b
 +#include <linux/clk.h>
 +#include <linux/dma-mapping.h>
 +#include <linux/cma.h>
-+#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
 +#include <linux/io.h>
 +#include <linux/of_reserved_mem.h>
 +#include "ion.h"
@@ -5391,12 +5391,12 @@ index 000000000..075cf8dda
 @@ -0,0 +1,8 @@
 +config VIDEO_SUNXI_CEDAR_VE
 +	tristate "Allwinner CedarX VideoEngine Driver"
-+    select DMA_SHARED_BUFFER
-+	---help---
-+	  This is the driver for sunxi video decoder, including h264/
-+	  mpeg4/mpeg2/vc1/rmvb.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called cedar_dev.
++	select DMA_SHARED_BUFFER
++	help
++		This is the driver for sunxi video decoder, including h264/
++		mpeg4/mpeg2/vc1/rmvb.
++		To compile this driver as a module, choose M here: the
++		module will be called cedar_dev.
 diff --git a/drivers/staging/media/sunxi/cedar/ve/Makefile b/drivers/staging/media/sunxi/cedar/ve/Makefile
 new file mode 100644
 index 000000000..26d7afe18
