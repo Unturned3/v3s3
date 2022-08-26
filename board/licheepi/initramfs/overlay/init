@@ -6,10 +6,10 @@ echo -e "${BLUE}Executing /init script${NC}"
 mount -t devtmpfs dev /dev	# devtmpfs is NOT auto-mounted by kernel in initramfs
 mount -t proc proc /proc	# Must mount /proc to mount real root later
 
-echo -e "${RED}Press ENTER to interrupt boot${NC}"
+echo -e "${RED}Press ENTER to switch to real root${NC}"
 read -t 1 ans	# 1 seconds delay to wait for input
 
-if [ $? == 0 ]; then
+if [ $? != 0 ]; then
 	echo -e "${BLUE}Entering initramfs.${NC}"
 
 	mkdir -p /dev/pts
