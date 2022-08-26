@@ -1,3 +1,45 @@
+/*
+ * Copyright (C) 2016 Icenowy Zheng <icenowy@aosc.xyz>
+ * Copyright (C) 2021 Tobias Schramm <t.schramm@manjaro.org>
+ *
+ * This file is dual-licensed: you can use it either under the terms
+ * of the GPL or the X11 license, at your option. Note that this dual
+ * licensing only applies to this file, and not this project as a
+ * whole.
+ *
+ *  a) This file is free software; you can redistribute it and/or
+ *     modify it under the terms of the GNU General Public License as
+ *     published by the Free Software Foundation; either version 2 of the
+ *     License, or (at your option) any later version.
+ *
+ *     This file is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ * Or, alternatively,
+ *
+ *  b) Permission is hereby granted, free of charge, to any person
+ *     obtaining a copy of this software and associated documentation
+ *     files (the "Software"), to deal in the Software without
+ *     restriction, including without limitation the rights to use,
+ *     copy, modify, merge, publish, distribute, sublicense, and/or
+ *     sell copies of the Software, and to permit persons to whom the
+ *     Software is furnished to do so, subject to the following
+ *     conditions:
+ *
+ *     The above copyright notice and this permission notice shall be
+ *     included in all copies or substantial portions of the Software.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *     OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/clock/sun8i-v3s-ccu.h>
@@ -9,21 +51,20 @@
 	#size-cells = <1>;
 	interrupt-parent = <&gic>;
 
-	/*
 	chosen {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
 
 		framebuffer-lcd {
-			compatible = "allwinner,simple-framebuffer", "simple-framebuffer";
+			compatible = "allwinner,simple-framebuffer",
+				     "simple-framebuffer";
 			allwinner,pipeline = "mixer0-lcd0";
-			clocks =	<&display_clocks CLK_MIXER0>,
-						<&ccu CLK_TCON0>;
+			clocks = <&display_clocks CLK_MIXER0>,
+				 <&ccu CLK_TCON0>;
 			status = "disabled";
 		};
 	};
-	*/
 
 	cpus {
 		#address-cells = <1>;
@@ -37,20 +78,18 @@
 		};
 	};
 
-	/*
 	de: display-engine {
 		compatible = "allwinner,sun8i-v3s-display-engine";
 		allwinner,pipelines = <&mixer0>;
 		status = "disabled";
 	};
-	*/
 
 	timer {
 		compatible = "arm,armv7-timer";
-		interrupts =	<GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-			     		<GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-			     		<GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-			     		<GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
 	};
 
 	clocks {
@@ -81,21 +120,18 @@
 		#size-cells = <1>;
 		ranges;
 
-		/*
 		display_clocks: clock@1000000 {
 			compatible = "allwinner,sun8i-v3s-de2-clk";
-			reg = <0x01000000 0x100000>;
-			clocks = <&ccu CLK_DE>,
-					 <&ccu CLK_BUS_DE>;
-			clock-names = "mod",
-						  "bus";
+			reg = <0x01000000 0x10000>;
+			clocks = <&ccu CLK_BUS_DE>,
+				 <&ccu CLK_DE>;
+			clock-names = "bus",
+				      "mod";
 			resets = <&ccu RST_BUS_DE>;
 			#clock-cells = <1>;
 			#reset-cells = <1>;
 		};
-		*/
 
-		/*
 		mixer0: mixer@1100000 {
 			compatible = "allwinner,sun8i-v3s-de2-mixer";
 			reg = <0x01100000 0x100000>;
@@ -120,21 +156,11 @@
 				};
 			};
 		};
-		*/
-
-		/*
-		syscon: system-control@1c00000 {
-			compatible = "allwinner,sun8i-v3s-system-control",
-				     "allwinner,sun8i-h3-system-control";
-			reg = <0x01c00000 0x1000>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges;
-		};
-		*/
 
 		syscon: syscon@1c00000 {
-			compatible = "allwinner,sun8i-v3s-system-controller", "allwinner,sun8i-h3-system-control", "syscon";
+			compatible = "allwinner,sun8i-v3s-system-controller",
+					"allwinner,sun8i-h3-system-control",
+					"syscon";
 			reg = <0x01c00000 0xd0>;
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -152,6 +178,24 @@
 					reg = <0x000000 0x80000>;
 				};
 			};
+		};
+
+		nmi_intc: interrupt-controller@1c000d0 {
+			compatible = "allwinner,sun8i-v3s-nmi",
+				     "allwinner,sun9i-a80-nmi";
+			interrupt-controller;
+			#interrupt-cells = <2>;
+			reg = <0x01c000d0 0x0c>;
+			interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		dma: dma-controller@1c02000 {
+			compatible = "allwinner,sun8i-v3s-dma";
+			reg = <0x01c02000 0x1000>;
+			interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&ccu CLK_BUS_DMA>;
+			resets = <&ccu RST_BUS_DMA>;
+			#dma-cells = <1>;
 		};
 
 		cedarx: video-codec@1c0e000 {
@@ -178,7 +222,6 @@
 			};
 		};
 
-		/*
 		tcon0: lcd-controller@1c0c000 {
 			compatible = "allwinner,sun8i-v3s-tcon";
 			reg = <0x01c0c000 0x1000>;
@@ -211,16 +254,6 @@
 					reg = <1>;
 				};
 			};
-		};
-		*/
-
-		dma: dma-controller@01c02000 {
-			compatible = "allwinner,sun8i-v3s-dma";
-			reg = <0x01c02000 0x1000>;
-			interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&ccu CLK_BUS_DMA>;
-			resets = <&ccu RST_BUS_DMA>;
-			#dma-cells = <1>;
 		};
 
 		mmc0: mmc@1c0f000 {
@@ -283,18 +316,19 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
-		
-		/*
+
 		crypto@1c15000 {
-			compatible = "allwinner,sun8i-v3s-crypto", "allwinner,sun8i-a33-crypto";
+			compatible = "allwinner,sun8i-v3s-crypto",
+				     "allwinner,sun8i-a33-crypto";
 			reg = <0x01c15000 0x1000>;
 			interrupts = <GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_CE>, <&ccu CLK_CE>;
 			clock-names = "ahb", "mod";
+			dmas = <&dma 16>, <&dma 16>;
+			dma-names = "rx", "tx";
 			resets = <&ccu RST_BUS_CE>;
 			reset-names = "ahb";
 		};
-		*/
 
 		usb_otg: usb@1c19000 {
 			compatible = "allwinner,sun8i-h3-musb";
@@ -323,23 +357,21 @@
 			#phy-cells = <1>;
 		};
 
-		/*
-		ohci0: usb@01c1a400 {
+		ehci0: usb@1c1a000 {
+			compatible = "allwinner,sun8i-v3s-ehci", "generic-ehci";
+			reg = <0x01c1a000 0x100>;
+			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&ccu CLK_BUS_EHCI0>, <&ccu CLK_BUS_OHCI0>;
+			resets = <&ccu RST_BUS_EHCI0>, <&ccu RST_BUS_OHCI0>;
+			status = "disabled";
+		};
+
+		ohci0: usb@1c1a400 {
 			compatible = "allwinner,sun8i-v3s-ohci", "generic-ohci";
 			reg = <0x01c1a400 0x100>;
 			interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_EHCI0>, <&ccu CLK_BUS_OHCI0>,
 				 <&ccu CLK_USB_OHCI0>;
-			resets = <&ccu RST_BUS_EHCI0>, <&ccu RST_BUS_OHCI0>;
-			status = "disabled";
-		};
-		*/
-
-		ehci0: usb@01c1a000 {
-			compatible = "allwinner,sun8i-v3s-ehci", "generic-ehci";
-			reg = <0x01c1a000 0x100>;
-			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&ccu CLK_BUS_EHCI0>, <&ccu CLK_BUS_OHCI0>;
 			resets = <&ccu RST_BUS_EHCI0>, <&ccu RST_BUS_OHCI0>;
 			status = "disabled";
 		};
@@ -375,6 +407,26 @@
 			interrupt-controller;
 			#interrupt-cells = <3>;
 
+			/omit-if-no-ref/
+			csi0_mclk_pin: csi0-mclk-pin {
+				pins = "PE20";
+				function = "csi_mipi";
+			};
+
+			/omit-if-no-ref/
+			csi1_8bit_pins: csi1-8bit-pins {
+				pins = "PE0", "PE2", "PE3", "PE8", "PE9",
+				       "PE10", "PE11", "PE12", "PE13", "PE14",
+				       "PE15";
+				function = "csi";
+			};
+
+			/omit-if-no-ref/
+			csi1_mclk_pin: csi1-mclk-pin {
+				pins = "PE1";
+				function = "csi";
+			};
+
 			emac_rgmii_pins: emac-rgmii-pins {
 				pins = "PD0", "PD1", "PD2", "PD3", "PD4",
 				       "PD5", "PD7", "PD8", "PD9", "PD10",
@@ -388,26 +440,26 @@
 				function = "i2c0";
 			};
 
+			/omit-if-no-ref/
+			i2c1_pb_pins: i2c1-pb-pins {
+				pins = "PB8", "PB9";
+				function = "i2c1";
+			};
+
+			/omit-if-no-ref/
 			i2c1_pe_pins: i2c1-pe-pins {
 				pins = "PE21", "PE22";
 				function = "i2c1";
 			};
 
-			csi1_8bit_pins: csi1-8bit-pins {
-				pins = "PE0", "PE2", "PE3", "PE8", "PE9",
-				       "PE10", "PE11", "PE12", "PE13", "PE14",
-				       "PE15";
-				function = "csi";
-			};
-
-			csi1_mclk_pin: csi1-mclk-pin {
-				pins = "PE1";
-				function = "csi";
-			};
-
 			uart0_pb_pins: uart0-pb-pins {
 				pins = "PB8", "PB9";
 				function = "uart0";
+			};
+
+			uart2_pins: uart2-pins {
+				pins = "PB0", "PB1";
+				function = "uart2";
 			};
 
 			mmc0_pins: mmc0-pins {
@@ -433,10 +485,11 @@
 		};
 
 		timer@1c20c00 {
-			compatible = "allwinner,sun4i-a10-timer";
+			compatible = "allwinner,sun8i-v3s-timer";
 			reg = <0x01c20c00 0xa0>;
 			interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>,
-				     <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
+				     <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&osc24M>;
 		};
 
@@ -444,30 +497,27 @@
 			compatible = "allwinner,sun6i-a31-wdt";
 			reg = <0x01c20ca0 0x20>;
 			interrupts = <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&osc24M>;
 		};
 
-		/*
 		pwm: pwm@1c21400 {
 			compatible = "allwinner,sun8i-v3s-pwm",
 				     "allwinner,sun7i-a20-pwm";
+			//reg = <0x01c21400 0xc>;	// mainline 5.19.3 version
 			reg = <0x01c21400 0x400>;
 			clocks = <&osc24M>;
 			#pwm-cells = <3>;
 			status = "disabled";
 		};
-		*/
 
-		/*
 		lradc: lradc@1c22800 {
 			compatible = "allwinner,sun4i-a10-lradc-keys";
 			reg = <0x01c22800 0x400>;
 			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
-		*/
 
-		/*
-		codec: codec@01c22c00 {
+		codec: codec@1c22c00 {
 			#sound-dai-cells = <0>;
 			compatible = "allwinner,sun8i-v3s-codec";
 			reg = <0x01c22c00 0x400>;
@@ -480,14 +530,11 @@
 			allwinner,codec-analog-controls = <&codec_analog>;
 			status = "disabled";
 		};
-		*/
 
-		/*
-		codec_analog: codec-analog@01c23000 {
+		codec_analog: codec-analog@1c23000 {
 			compatible = "allwinner,sun8i-v3s-codec-analog";
 			reg = <0x01c23000 0x4>;
 		};
-		*/
 
 		uart0: serial@1c28000 {
 			compatible = "snps,dw-apb-uart";
@@ -496,6 +543,8 @@
 			reg-shift = <2>;
 			reg-io-width = <4>;
 			clocks = <&ccu CLK_BUS_UART0>;
+			dmas = <&dma 6>, <&dma 6>;
+			dma-names = "rx", "tx";
 			resets = <&ccu RST_BUS_UART0>;
 			status = "disabled";
 		};
@@ -507,6 +556,8 @@
 			reg-shift = <2>;
 			reg-io-width = <4>;
 			clocks = <&ccu CLK_BUS_UART1>;
+			dmas = <&dma 7>, <&dma 7>;
+			dma-names = "rx", "tx";
 			resets = <&ccu RST_BUS_UART1>;
 			status = "disabled";
 		};
@@ -518,7 +569,11 @@
 			reg-shift = <2>;
 			reg-io-width = <4>;
 			clocks = <&ccu CLK_BUS_UART2>;
+			dmas = <&dma 8>, <&dma 8>;
+			dma-names = "rx", "tx";
 			resets = <&ccu RST_BUS_UART2>;
+			pinctrl-0 = <&uart2_pins>;
+			pinctrl-names = "default";
 			status = "disabled";
 		};
 
@@ -549,7 +604,7 @@
 		};
 
 		emac: ethernet@1c30000 {
-			compatible = "allwinner,sun8i-h3-emac";
+			compatible = "allwinner,sun8i-v3s-emac";
 			syscon = <&syscon>;
 			reg = <0x01c30000 0x10000>;
 			interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
@@ -558,6 +613,8 @@
 			reset-names = "stmmaceth";
 			clocks = <&ccu CLK_BUS_EMAC>;
 			clock-names = "stmmaceth";
+			phy-handle = <&int_mii_phy>;
+			phy-mode = "mii";
 			status = "disabled";
 
 			mdio: mdio {
@@ -572,7 +629,7 @@
 				#size-cells = <0>;
 
 				mdio-parent-bus = <&mdio>;
-				// Only one MDIO is usable at the time
+				/* Only one MDIO is usable at the time */
 				internal_mdio: mdio@1 {
 					compatible = "allwinner,sun8i-h3-mdio-internal";
 					reg = <1>;
@@ -601,12 +658,25 @@
 			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_SPI0>, <&ccu CLK_SPI0>;
 			clock-names = "ahb", "mod";
+			dmas = <&dma 23>, <&dma 23>;
+			dma-names = "rx", "tx";
 			pinctrl-names = "default";
 			pinctrl-0 = <&spi0_pins>;
 			resets = <&ccu RST_BUS_SPI0>;
 			status = "disabled";
 			#address-cells = <1>;
 			#size-cells = <0>;
+		};
+
+		gic: interrupt-controller@1c81000 {
+			compatible = "arm,gic-400";
+			reg = <0x01c81000 0x1000>,
+			      <0x01c82000 0x2000>,
+			      <0x01c84000 0x2000>,
+			      <0x01c86000 0x2000>;
+			interrupt-controller;
+			#interrupt-cells = <3>;
+			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 		};
 
 		csi1: camera@1cb4000 {
@@ -619,17 +689,6 @@
 			clock-names = "bus", "mod", "ram";
 			resets = <&ccu RST_BUS_CSI>;
 			status = "disabled";
-		};
-
-		gic: interrupt-controller@1c81000 {
-			compatible = "arm,gic-400";
-			reg = <0x01c81000 0x1000>,
-			      <0x01c82000 0x1000>,
-			      <0x01c84000 0x2000>,
-			      <0x01c86000 0x2000>;
-			interrupt-controller;
-			#interrupt-cells = <3>;
-			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 		};
 
 		reg_vcc2v8: vcc2v8 {
