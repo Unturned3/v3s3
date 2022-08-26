@@ -1,4 +1,4 @@
 
-- Create custom FFMPEG package
-	Because the "--enable-omx" option in Buildroot's default FFMPEG doesn't actually create a dependency on the cedar_VE package. This can cause a build error when FFMPEG is built before cedar_VE (which provides the OMX sources).
+- Clean up Linux 5.19.3 config
+- Incorporate patches for mipi-csi2 and ISP
 
