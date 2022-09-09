@@ -1,0 +1,7 @@
+config BR2_PACKAGE_H264ENC_DEMO
+	bool "CedarVE H.264 encoding demo"
+	depends on BR2_PACKAGE_LIBV4L && BR2_PACKAGE_LIBCEDARC
+	default n
+	help
+		Demo program for encoding DVP camera stream to H.264
+

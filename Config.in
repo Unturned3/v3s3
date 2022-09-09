@@ -1,5 +1,6 @@
 # Uncomment lines if needed
 source "$BR2_EXTERNAL_V3S3_PATH/package/libcedarc/Config.in"
+source "$BR2_EXTERNAL_V3S3_PATH/package/h264enc_demo/Config.in"
 
 config BR2_EXTERNAL_ENABLE_INITRAMFS
 	bool "Include pre-built initramfs image"
