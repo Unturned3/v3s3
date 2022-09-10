@@ -6,7 +6,7 @@
 # replace with values appropriate for your setup
 port=2222
 host=richard@192.168.123.11
-path=~/shared
+path='~/shared'
 
 #scp -P $port out.jpg ${host}:${path}
 scp -P $port /mnt/out.h264 ${host}:${path}
