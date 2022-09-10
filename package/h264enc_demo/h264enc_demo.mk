@@ -4,12 +4,12 @@
 #
 ################################################################################
 
-H264ENC_DEMO_SITE = $(BR2_EXTERNAL_V3S3_PATH)/package/h264enc_demo/src
-H264ENC_DEMO_SITE_METHOD = local
+H264ENC_DEMO_VERSION = master
+H264ENC_DEMO_SITE = $(call github,Unturned3,h264enc_demo,$(H264ENC_DEMO_VERSION))
 H264ENC_DEMO_DEPENDENCIES = libcedarc libv4l
 
 define H264ENC_DEMO_BUILD_CMDS
-	$(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)
+	$(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
 endef
 
 define H264ENC_DEMO_INSTALL_TARGET_CMDS
