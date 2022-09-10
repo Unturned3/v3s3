@@ -4,16 +4,15 @@
 #
 ################################################################################
 
-HELLO_VERSION = 1.0
-HELLO_SITE = package/h264enc_demo/src
-HELLO_SITE_METHOD = local
+H264ENC_DEMO_SITE = $(BR2_EXTERNAL_V3S3_PATH)/package/h264enc_demo/src
+H264ENC_DEMO_SITE_METHOD = local
 
-define HELLO_BUILD_CMDS
+define H264ENC_DEMO_BUILD_CMDS
 	$(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)
 endef
 
-define HELLO_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/hello $(TARGET_DIR)/home/root
+define H264ENC_DEMO_INSTALL_TARGET_CMDS
+	$(INSTALL) -D -m 0755 $(@D)/main $(TARGET_DIR)/root/h264enc_demo
 endef
 
 $(eval $(generic-package))
