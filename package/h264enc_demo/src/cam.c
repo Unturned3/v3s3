@@ -238,7 +238,7 @@ int cam_init(unsigned int width, unsigned int height, unsigned int pixfmt) {
 								MAP_SHARED, fd, buf.m.offset);
 		buffers[i].length = buf.length;
 		buffers[i].addrVirY = buffers[i].start;
-		// This ALIGN_16B is bullshit
+		// This ALIGN_16B thing is wrong?
 		// At 1920x1080, this will screw up the data alignment and create a green band in video
 
 		//buffers[i].addrVirC = buffers[i].start + ALIGN_16B(g_width) * ALIGN_16B(g_height);
@@ -246,9 +246,9 @@ int cam_init(unsigned int width, unsigned int height, unsigned int pixfmt) {
 		
 		int addr = buf.m.offset;
 		check_ret(ioctl(fd, CAM_V2P_IOCTL, &addr), "CAM_V2P_IOCTL");
-		buffers[i].addrPhyY = addr;
+		buffers[i].addrPhyY = (void *) addr;
 		//buffers[i].addrPhyC = addr + ALIGN_16B(g_width) * ALIGN_16B(g_height);
-		buffers[i].addrPhyC = addr + g_width * g_height;
+		buffers[i].addrPhyC = (void *) (addr + g_width * g_height);
 	}
 
 	return 0;
