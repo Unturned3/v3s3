@@ -1,0 +1,39 @@
+diff --git a/drivers/clk/sunxi-ng/ccu-sun8i-v3s.h b/drivers/clk/sunxi-ng/ccu-sun8i-v3s.h
+index 108eeeed..8ed4eff8 100644
+--- a/drivers/clk/sunxi-ng/ccu-sun8i-v3s.h
++++ b/drivers/clk/sunxi-ng/ccu-sun8i-v3s.h
+@@ -39,14 +39,10 @@
+ 
+ /* The first bunch of module clocks are exported */
+ 
+-#define CLK_DRAM		58
+-
+ /* All the DRAM gates are exported */
+ 
+ /* Some more module clocks are exported */
+ 
+-#define CLK_MBUS		72
+-
+ /* And the GPU module clock is exported */
+ 
+ #define CLK_PLL_DDR1		74
+diff --git a/include/dt-bindings/clock/sun8i-v3s-ccu.h b/include/dt-bindings/clock/sun8i-v3s-ccu.h
+index 014ac612..ba522e12 100644
+--- a/include/dt-bindings/clock/sun8i-v3s-ccu.h
++++ b/include/dt-bindings/clock/sun8i-v3s-ccu.h
+@@ -88,6 +88,7 @@
+ #define CLK_USB_PHY0		56
+ #define CLK_USB_OHCI0		57
+ 
++#define CLK_DRAM		58
+ #define CLK_DRAM_VE		59
+ #define CLK_DRAM_CSI		60
+ #define CLK_DRAM_EHCI		61
+@@ -102,6 +103,7 @@
+ #define CLK_AC_DIG		70
+ #define CLK_AVS			71
+ 
++#define CLK_MBUS		72
+ #define CLK_MIPI_CSI		73
+ 
+ /* Clocks not available on V3s */
