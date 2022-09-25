@@ -722,9 +722,11 @@
 				port@2 {
 					reg = <2>;
 
+					/*
 					csi0_out_isp: endpoint {
 						remote-endpoint = <&isp_in_csi0>;
 					};
+					*/
 				};
 			};
 		};
@@ -805,9 +807,11 @@
 				port@0 {
 					reg = <0>;
 
+					/*
 					isp_in_csi0: endpoint {
 						remote-endpoint = <&csi0_out_isp>;
 					};
+					*/
 				};
 			};
 		};
@@ -824,6 +828,13 @@
 			regulator-name = "vcc1v8";
 			regulator-min-microvolt = <1800000>;
 			regulator-max-microvolt = <1800000>;
+		};
+
+		reg_vcc1v2: vcc1v2 {
+			compatible = "regulator-fixed";
+			regulator-name = "vcc1v2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
 		};
 	};
 };
