@@ -118,7 +118,29 @@
 };
 */
 
+&csi0 {
+	status = "okay";
+};
+
+&mipi_csi2 {
+	status = "okay";
+};
+
+&mipi_csi2_in {
+	mipi_csi2_in_csi0: endpoint {
+		data-lanes = <1 2>;
+		clock-noncontinuous;
+		link-frequencies = /bits/ 64 <456000000>;
+		remote-endpoint = <&imx219_mipi_csi2_out>;
+	};
+};
+
+&dphy {
+	status = "okay";
+};
+
 // OV5640
+/*
 &csi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&csi1_8bit_pins>;
@@ -138,12 +160,38 @@
 		};
 	};
 };
+*/
 
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pe_pins>;
 	status = "okay";
 
+	imx219: camera@10 {
+		compatible = "sony,imx219";
+		reg = <0x10>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&csi0_mclk_pin>;
+
+		clocks = <&ccu CLK_CSI0_MCLK>;
+		clock_names = "xclk";
+		assigned-clocks = <&ccu CLK_CSI0_MCLK>;
+		assigned-clock-rates = <24000000>;
+		VANA-supply = <&reg_vcc2v8>;	// 2v8
+		VDIG-supply = <&reg_vcc1v8>;	// 1v8
+		VDDL-supply = <&reg_vcc1v2>;	// 1v2
+
+		port {
+			imx219_mipi_csi2_out: endpoint {
+				data-lanes = <1 2>;
+				clock-noncontinuous;
+				link-frequencies = /bits/ 64 <456000000>;
+				remote-endpoint = <&mipi_csi2_in_csi0>;
+			};
+		};
+	};
+
+	/*
 	ov5640: camera@3c {
 		compatible = "ovti,ov5640";
 		reg = <0x3c>;
@@ -169,5 +217,6 @@
 			};
 		};
 	};
+	*/
 };
 
