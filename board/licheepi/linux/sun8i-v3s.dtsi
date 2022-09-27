@@ -711,23 +711,23 @@
 				#address-cells = <1>;
 				#size-cells = <0>;
 
-				port@1 {
-					reg = <1>;
+				port@0 {
+					reg = <0>;
 
 					csi0_in_mipi_csi2: endpoint {
 						remote-endpoint = <&mipi_csi2_out_csi0>;
 					};
 				};
 
+				/*
 				port@2 {
 					reg = <2>;
 
-					/*
 					csi0_out_isp: endpoint {
 						remote-endpoint = <&isp_in_csi0>;
 					};
-					*/
 				};
+				*/
 			};
 		};
 
@@ -787,6 +787,7 @@
 			status = "disabled";
 		};
 
+		/*
 		isp: isp@1cb8000 {
 			compatible = "allwinner,sun8i-v3s-isp";
 			reg = <0x01cb8000 0x1000>;
@@ -807,14 +808,13 @@
 				port@0 {
 					reg = <0>;
 
-					/*
 					isp_in_csi0: endpoint {
 						remote-endpoint = <&csi0_out_isp>;
 					};
-					*/
 				};
 			};
 		};
+		*/
 
 		reg_vcc2v8: vcc2v8 {
 			compatible = "regulator-fixed";
