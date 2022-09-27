@@ -3252,7 +3252,7 @@ index 000000000..8e3bd3a61
 +	heap->shrinker.scan_objects = ion_heap_shrink_scan;
 +	heap->shrinker.seeks = DEFAULT_SEEKS;
 +	heap->shrinker.batch = 0;
-+	register_shrinker(&heap->shrinker);
++	register_shrinker(&heap->shrinker, "_ION_HEAP_INIT_SHRINKER_");
 +}
 +
 +struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
