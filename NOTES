@@ -1,13 +1,49 @@
 
+# Here are some miscellaneous docs that I found
+# useful during the development of this repository
 
-- Setup vscode to navigate Linux kernel source:
+- Setup vscode to navigate Linux kernel source
+
 	https://stackoverflow.com/q/49198816/18061591
 
-- Enable pr_debug in drivers:
-	https://www.kernel.org/doc/local/pr_debug.txt
+- Linux kernel debug facilities
+
+	- DebugFS
+		$ mount -t debugfs debugfs /sys/kernel/debug
+
+	- Enable pr_debug():
+		https://www.kernel.org/doc/local/pr_debug.txt
+
+	- Enable dev_dbg():
+		https://stackoverflow.com/a/50522223/18061591
+
+- Device driver probe() never called
+
+	https://stackoverflow.com/a/35615106/18061591
+
+- Device driver without compatible string
+
+	https://stackoverflow.com/q/28406776/18061591
+
+- Device tree docs/tutorials
+
+	- General
+
+		https://elinux.org/Device_Tree_Linux
+
+		https://elinux.org/Device_Tree_Usage
+
+	- Solving device tree issues (there are 3 parts to this guide)
+
+		https://elinux.org/images/0/04/Dt_debugging_elce_2015_151006_0421.pdf
 
 - MP4/H264 Analyzer
+
 	https://lulebo.github.io/
+
 	http://lvcdn.net/gop/
 
+- Creating patch files using `git diff`
+
+	https://stackoverflow.com/a/15438863/18061591
 
