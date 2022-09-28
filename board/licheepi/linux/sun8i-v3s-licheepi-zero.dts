@@ -118,6 +118,21 @@
 };
 */
 
+// IMX219/290
+&csi0 {
+	status = "okay";
+	allwinner,mipi-csi-bps = <729600000>;
+    port {
+        csi0_ep: endpoint {
+            remote-endpoint = <&imx219_0>;
+            clock-lanes = <0>;
+            data-lanes = <1 2>;
+        };
+    };
+};
+
+
+/*
 // OV5640
 &csi1 {
 	pinctrl-names = "default";
@@ -138,12 +153,63 @@
 		};
 	};
 };
+*/
 
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pe_pins>;
 	status = "okay";
 
+	imx219: camera@10 {
+		compatible = "sony,imx219";
+		reg = <0x10>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&csi0_mclk>;
+		clocks = <&ccu CLK_CSI0_MCLK>;
+		clock-names = "xclk";
+		assigned-clocks = <&ccu CLK_CSI0_MCLK>;
+		assigned-clock-rates = <24000000>;
+		//powerdown-gpios = <&pio 4 19 GPIO_ACTIVE_HIGH>;
+		//reset-gpios = <&pio 4 18 GPIO_ACTIVE_LOW>;
+		port {
+			imx219_0: endpoint {
+				remote-endpoint = <&csi0_ep>;
+				clock-lanes = <0>;
+				clock-noncontinuous;
+				link-frequencies = /bits/ 64 <456000000>;
+				data-lanes = <1 2>;
+			};
+		};
+	};
+
+	/*
+	imx290: camera-sensor@1a {
+		compatible = "sony,imx290";
+		reg = <0x1a>;
+
+		//reset-gpios = <&msmgpio 35 GPIO_ACTIVE_LOW>;
+		//pinctrl-names = "default";
+		//pinctrl-0 = <&camera_rear_default>;
+
+		clocks = <&ccu CLK_CSI0_MCLK>;
+		clock-names = "xclk";
+		clock-frequency = <37125000>;
+
+		//vdddo-supply = <&camera_vdddo_1v8>;
+		//vdda-supply = <&camera_vdda_2v8>;
+		//vddd-supply = <&camera_vddd_1v5>;
+
+		port {
+			imx290_0: endpoint {
+				data-lanes = <1 2>;
+				link-frequencies = /bits/ 64 <445500000>;
+				remote-endpoint = <&csi0_ep>;
+			};
+		};
+	};
+	*/
+
+	/*
 	ov5640: camera@3c {
 		compatible = "ovti,ov5640";
 		reg = <0x3c>;
@@ -169,5 +235,6 @@
 			};
 		};
 	};
+	*/
 };
 
