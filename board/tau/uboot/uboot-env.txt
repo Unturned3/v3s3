@@ -1,0 +1,5 @@
+
+quiet=0
+scriptaddr=0x42000000
+bootcmd=load mmc 0:1 ${scriptaddr} boot.scr; source ${scriptaddr}
+

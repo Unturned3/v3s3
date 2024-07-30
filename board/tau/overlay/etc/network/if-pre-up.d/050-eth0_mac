@@ -1,0 +1,4 @@
+#!/bin/sh
+
+ifconfig eth0 hw ether 12:34:56:78:90:FF
+

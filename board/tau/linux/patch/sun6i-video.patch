@@ -1,0 +1,133 @@
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+index f0dfe68..d1c9c3a 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+@@ -13,6 +13,8 @@
+ #include <media/v4l2-mc.h>
+ #include <media/videobuf2-dma-contig.h>
+ #include <media/videobuf2-v4l2.h>
++#include <media/videobuf2-memops.h>
++#include <linux/dma-direct.h>
+ 
+ #include "sun6i_csi.h"
+ #include "sun6i_video.h"
+@@ -433,6 +435,110 @@ static int vidioc_s_input(struct file *file, void *fh, unsigned int i)
+ 	return 0;
+ }
+ 
++// Private function copied from videobuf2-core.c
++static int vb2_core_find_plane_by_offset(struct vb2_queue *q, unsigned long off,
++				  unsigned int *_buffer, unsigned int *_plane)
++{
++	struct vb2_buffer *vb;
++	unsigned int buffer, plane;
++
++	if (q == NULL) {
++		printk(KERN_ERR "Error: %s: q is NULL\n", __FILE__);
++		return -EINVAL;
++	}
++
++	for (buffer = 0; buffer < q->num_buffers; ++buffer) {
++		vb = q->bufs[buffer];
++
++		if (vb == NULL) {
++			printk(KERN_ERR "Error: %s: vb is NULL; buffer = %d\n", __FILE__, buffer);
++			return -EINVAL;
++		}
++
++		for (plane = 0; plane < vb->num_planes; ++plane) {
++			if (vb->planes[plane].m.offset == off) {
++				*_buffer = buffer;
++				*_plane = plane;
++				return 0;
++			}
++		}
++	}
++
++	return -EINVAL;
++}
++
++// Private struct copied from videobuf2-dma-contig.c
++struct __priv_vb2_dc_buf {
++	struct device *dev;
++	void *vaddr;
++	unsigned long size;
++	void *cookie;
++	dma_addr_t dma_addr;
++	unsigned long attrs;
++	enum dma_data_direction dma_dir;
++	struct sg_table *dma_sgt;
++	struct frame_vector *vec;
++	struct vb2_vmarea_handler handler;
++	refcount_t refcount;
++	struct sg_table *sgt_base;
++	struct dma_buf_attachment *db_attach;
++};
++
++// Handler for custom ioctls
++static long vidioc_default_handler (struct file *file, void *fh,
++	bool valid_prio, unsigned int cmd, void *arg) {
++
++	struct video_device *vdev;
++	struct vb2_buffer *vb;
++	struct __priv_vb2_dc_buf *db;
++	int ret = 0, buffer = 0, plane = 0;
++
++	if (cmd == 12345677) {
++
++		int arg_val = 0, res_v2p = 0, res_d2p = 0;
++
++		if (copy_from_user(&arg_val, arg, 4)) {
++			printk(KERN_ERR "Error: %s: copy_from_user() failed\n", __FILE__);
++			return -EINVAL;
++		}
++
++		vdev = video_devdata(file);
++
++		if (vdev == NULL) {
++			printk(KERN_ERR "Error: %s: video_devdata() failed\n", __FILE__);
++			return -EINVAL;
++		}
++
++		ret = vb2_core_find_plane_by_offset(vdev->queue, arg_val, &buffer, &plane);
++		if (ret) {
++			printk(KERN_ERR "Error: %s: video_devdata() failed\n", __FILE__);
++			return -EINVAL;
++		}
++
++		vb = vdev->queue->bufs[buffer];
++		db = vb->planes[plane].mem_priv;
++
++		//printk(KERN_INFO "Info: %s: running virt_to_phys() translation\n", __FILE__);
++
++		// This seems to be an abuse of virt_to_phys()
++		// But it seems to work
++		res_v2p = virt_to_phys((void *)db->dma_addr);
++		//res_d2p = dma_to_phys(&vdev->dev, db->dma_addr);
++
++		if (copy_to_user(arg, &res_v2p, 4)) {
++			printk(KERN_ERR "Error: %s: copy_to_user() failed\n", __FILE__);
++			return -EINVAL;
++		}
++		//printk(KERN_INFO "Info: %s: res_v2p: 0x%08x, res_d2p: 0x%08x\n", __FILE__, res_v2p, res_d2p);
++	}
++	else {
++		printk(KERN_INFO "Info: %s: ignoring unknown ioctl %d\n", __FILE__, cmd);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ static const struct v4l2_ioctl_ops sun6i_video_ioctl_ops = {
+ 	.vidioc_querycap		= vidioc_querycap,
+ 	.vidioc_enum_fmt_vid_cap	= vidioc_enum_fmt_vid_cap,
+@@ -457,6 +563,8 @@ static const struct v4l2_ioctl_ops sun6i_video_ioctl_ops = {
+ 	.vidioc_log_status		= v4l2_ctrl_log_status,
+ 	.vidioc_subscribe_event		= v4l2_ctrl_subscribe_event,
+ 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
++
++	.vidioc_default = vidioc_default_handler
+ };
+ 
+ /* -----------------------------------------------------------------------------
