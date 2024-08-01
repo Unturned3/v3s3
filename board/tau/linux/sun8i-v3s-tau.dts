@@ -1,7 +1,10 @@
 
 /dts-v1/;
 #include "sun8i-v3s.dtsi"
-#include "sunxi-common-regulators.dtsi"
+#include "allwinner/sunxi-common-regulators.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/leds/common.h>
 
 / {
 	model = "Tau";
@@ -20,14 +23,13 @@
 
 	leds {
 		compatible = "gpio-leds";
+		status = "okay";
 
 		green_led {
 			label = "green";
-			gpios = <&pio 1 3 GPIO_ACTIVE_LOW>;	// PB3
+			gpios = <&pio 1 3 GPIO_ACTIVE_HIGH>;	// PB3
 			linux,default-trigger = "activity";
 		};
-
-		status = "okay";
 	};
 };
 
@@ -60,7 +62,7 @@
 	broken-cd;
 	bus-width = <4>;
 	vmmc-supply = <&reg_vcc3v3>;
-	status = "disabled";
+	status = "okay";
 };
 
 &uart0 {
