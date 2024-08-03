@@ -62,7 +62,12 @@
 	broken-cd;
 	bus-width = <4>;
 	vmmc-supply = <&reg_vcc3v3>;
+	non-removable;
 	status = "okay";
+
+	rtl8723bs: wifi@1 {
+		reg = <1>;
+	};
 };
 
 &uart0 {
