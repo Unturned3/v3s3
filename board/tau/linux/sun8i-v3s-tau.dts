@@ -105,8 +105,8 @@
 };
 
 &i2c1 {
-	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pe_pins>;
+	pinctrl-names = "default";
 	status = "okay";
 
 	ov5640: camera@3c {
