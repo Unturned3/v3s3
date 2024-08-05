@@ -69,6 +69,13 @@
 	};
 };
 
+&mmc2 {
+	broken-cd;
+	bus-width = <1>;
+	vmmc-supply = <&reg_vcc3v3>;
+	status = "okay";
+};
+
 &uart0 {
 	pinctrl-0 = <&uart0_pb_pins>;
 	pinctrl-names = "default";
