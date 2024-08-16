@@ -1,0 +1,24 @@
+#!/bin/sh
+
+start() {
+	printf 'Loading kernel module sunxi_wdt: '
+	modprobe sunxi_wdt
+	status=$?
+	if [ "$status" -eq 0 ]; then
+		echo "OK"
+	else
+		echo "FAIL"
+	fi
+	return "$status"
+}
+
+case "$1" in
+	start)
+		"$1"
+		;;
+	stop)
+		;;
+	*)
+		echo "Usage: $0 start"
+		exit 1
+esac

@@ -1,12 +1,17 @@
+wdt dev watchdog@1c20ca0
+wdt start 10000
 
-setenv bootargs "${bootargs} console=ttyS0,115200 panic=5 rootwait root=PARTUUID=3f5287b6-02 earlyprintk rw"
-
-if test "${quiet}" = "1"; then
+if test "${kern_quiet}" = "1"; then
 	setenv bootargs "${bootargs} quiet"
+fi
+
+if test "${earlyprintk}" = "1"; then
+	setenv bootargs "${bootargs} earlyprintk"
 fi
 
 load mmc 0:1 0x41000000 zImage
 load mmc 0:1 0x41800000 sun8i-v3s-tau.dtb
 
+wdt reset
 bootz 0x41000000 - 0x41800000
 
