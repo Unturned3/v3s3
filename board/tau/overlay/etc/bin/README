@@ -1,0 +1,2 @@
+Miscellaneous binaries / scripts for system management, intended to be
+invoked by other scripted systems (e.g. inittab or mdev). Use with care.

@@ -1,4 +1,4 @@
 #!/bin/sh
 
-export DROPBEAR_ARGS='-BE'
+export DROPBEAR_ARGS='-B'
 

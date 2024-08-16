@@ -1,0 +1,60 @@
+#!/bin/sh
+
+set -o pipefail
+
+da_dir='/dev/mmc/by-dt-addr'
+pu_dir='/dev/mmc/by-partuuid'
+
+mkdir -p $da_dir
+mkdir -p $pu_dir
+
+case "$ACTION" in
+
+	add)
+		disk=`echo $MDEV | cut -dp -f1`
+		part=`echo $MDEV | cut -dp -f2 | awk '{printf "%02d", $0}'`
+		addr=`readlink -f /sys/block/$disk | cut -d/ -f6 | cut -d. -f1`
+		sig=`dd if=/dev/$disk bs=1 skip=440 count=4 2>/dev/null | hexdump -e '"%08x\n"'`
+
+		if [[ "$addr" == "" ]]; then
+			logger -s -t 'mdev handle-mmc' -p user.err \
+				"Error: could not find DT node address for $MDEV"
+			exit 1
+		fi
+
+		if [[ "$sig" == "" ]]; then
+			logger -s -t 'mdev handle-mmc' -p user.err \
+				"Error: could not find MBR disk signature for $MDEV"
+			exit 1
+		fi
+
+		if [[ "$part" == "00" ]]; then
+			da_name=${addr}
+			pu_name=${sig}
+		else
+			da_name=${addr}-${part}
+			pu_name=${sig}-${part}
+		fi
+
+		ln -s /dev/$MDEV $da_dir/$da_name &> /dev/null
+		ln -s /dev/$MDEV $pu_dir/$pu_name &> /dev/null
+
+		if [[ "$?" != 0 ]]; then
+			logger -s -t 'mdev handle-mmc' -p user.err \
+				"Error: partuuid '$sig' of $MDEV already exists"
+		fi
+
+		;;
+
+	remove)
+		# Remove all broken symlinks in /dev/mmc
+		# i.e. those whose device file is already gone.
+		find /dev/mmc -type l ! -exec test -e {} \; -exec rm {} \;
+
+		;;
+
+	*)
+		logger -s -t 'mdev handle-mmc' -p user.err \
+			"Error: unknown action $ACTION"
+		exit 1
+esac

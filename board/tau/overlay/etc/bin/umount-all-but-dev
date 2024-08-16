@@ -1,0 +1,4 @@
+#!/bin/sh
+
+mounts=`cat /proc/mounts | cut -d' ' -f2 | grep -v '^/dev$'`
+umount -r $mounts
