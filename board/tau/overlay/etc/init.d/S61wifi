@@ -1,0 +1,71 @@
+#!/bin/sh
+
+#
+# Connect to wifi
+#
+
+itf='wlan0'
+
+ssid='YOUR_SSID'
+pswd='YOUR_PASSWORD'
+
+wpa_sup_pidf="/var/run/wpa_sup_$itf.pid"
+udhcpc_pidf="/var/run/udhcpc_$itf.pid"
+
+itf_exists() {
+    [ -d "/sys/class/net/$itf" ]
+	# && [ "$(cat /sys/class/net/$INTERFACE/operstate 2>/dev/null)" == "up" ]
+}
+
+start() {
+	if [ -e $wpa_sup_pidf ]; then
+		echo "Already started."
+		return 1
+	fi
+
+	#modprobe r8723bs
+
+	while ! itf_exists; do
+		sleep 1
+	done
+
+	ip link set $itf up
+
+	wpa_supplicant -P $wpa_sup_pidf \
+		-s -B -i $itf \
+		-c <(wpa_passphrase $ssid $pswd)
+
+	sleep 5
+	udhcpc -S -i "wlan0" \
+		-A 3 \
+		-x "hostname:$(hostname)" \
+		-p "$udhcpc_pidf" \
+		&> /dev/null &
+}
+
+stop() {
+	if [ -e $wpa_sup_pidf ]; then
+		kill $(cat $wpa_sup_pidf)
+	fi
+	if [ -e $udhcpc_pidf]; then
+		kill $(cat $udhcpc_pidf)
+	fi
+	ip link set $itf down
+}
+
+case "$1" in
+	start)
+		start &
+		;;
+	stop)
+		stop
+		;;
+	restart|reload)
+		stop
+		sleep 1
+		start &
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac

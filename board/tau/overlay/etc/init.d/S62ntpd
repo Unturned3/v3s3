@@ -1,0 +1,23 @@
+#!/bin/sh
+
+start() {
+	while ! ping -c 1 -W 1 google.com &> /dev/null; do
+		logger -t ntpd "Waiting for network..."
+		sleep 1
+	done
+	ntpd -p pool.ntp.org
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		;;
+	restart|reload)
+		start
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac

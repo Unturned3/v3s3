@@ -1,0 +1,58 @@
+#!/bin/sh
+
+mac_file="/etc/eth0_mac_address"
+
+gen_rand_mac() {
+	echo "02$(hexdump -n5 -e '/1 ":%02X"' /dev/urandom)" \
+		| tr '[:upper:]' '[:lower:]'
+}
+
+link_is_up() {
+	[ "$(cat /sys/class/net/eth0/carrier 2>/dev/null)" == "1" ]
+}
+
+start() {
+
+	ip link set dev eth0 up
+
+	# Due to a circuit design issue, Tau will fail to acquire
+	# a 100Mbps link with some routers (e.g. the Verizon Fios).
+	# We force 10Mbps to be safe.
+	ethtool -s eth0 speed 10 duplex full autoneg off
+
+	if [ -f $mac_file ]; then
+		mac=$(cat $mac_file)
+	else
+		mac=$(gen_rand_mac)
+		echo $mac > $mac_file
+	fi
+
+	ip link set dev eth0 down
+	ip link set dev eth0 address $mac
+	ip link set dev eth0 up
+	logger -s "eth0 MAC address set to $mac"
+
+	while ! link_is_up; do
+		sleep 1
+	done
+
+	udhcpc -S -i "eth0" \
+		-A 3 \
+		-x "hostname:$(hostname)" \
+		&> /dev/null &
+
+	return 0
+}
+
+case "$1" in
+	start)
+		start &
+		;;
+	stop)
+		;;
+	restart|reload)
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac

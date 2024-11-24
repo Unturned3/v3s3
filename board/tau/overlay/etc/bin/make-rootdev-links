@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Creates /dev/rootdev* entries
+
+root=$(rdev)
+
+if echo $root | grep -q mmcblk; then
+	rootdev=$(echo $root | cut -d'p' -f 1)
+	parts=$(ls /dev | grep $(basename $rootdev)p | cut -dp -f2)
+	ln -sf $rootdev /dev/rootdev
+	for i in $parts; do
+		ln -sf ${rootdev}p$i /dev/rootdevp$i
+	done
+else
+	echo "make-rootdev-links: Unsupported device: $root" > /dev/kmsg
+	exit 1
+fi

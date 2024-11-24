@@ -1,0 +1,19 @@
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+export TZ='EST+5EDT,M3.2.0/2,M11.1.0/2'
+export EDITOR='/bin/vi'
+
+if [ "$PS1" ]; then
+        if [ "`id -u`" -eq 0 ]; then
+                export PS1='\u@\h # '
+        else
+                export PS1='\u@\h $ '
+        fi
+fi
+
+# Source configuration files from /etc/profile.d
+for i in /etc/profile.d/*.sh ; do
+        if [ -r "$i" ]; then
+                . $i
+        fi
+done
+unset i
