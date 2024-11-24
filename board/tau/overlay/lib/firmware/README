@@ -1,2 +1,5 @@
 The 'rtlwifi' firmware was taken from Debian's repo.
 https://packages.debian.org/buster/firmware-realtek
+
+The 'mt7610u.bin' firmware was taken from Debian's repo.
+https://packages.debian.org/bookworm/firmware-misc-nonfree
