@@ -42,6 +42,7 @@
  */
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/clock/sun6i-rtc.h>
 #include <dt-bindings/clock/sun8i-v3s-ccu.h>
 #include <dt-bindings/reset/sun8i-v3s-ccu.h>
 #include <dt-bindings/clock/sun8i-de2.h>
@@ -97,7 +98,7 @@
 		#size-cells = <1>;
 		ranges;
 
-		osc24M: osc24M_clk {
+		osc24M: osc24M-clk {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
 			clock-frequency = <24000000>;
@@ -105,7 +106,7 @@
 			clock-output-names = "osc24M";
 		};
 
-		osc32k: osc32k_clk {
+		osc32k: osc32k-clk {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
 			clock-frequency = <32768>;
@@ -140,8 +141,6 @@
 			clock-names = "bus",
 				      "mod";
 			resets = <&display_clocks 0>;
-			assigned-clocks = <&display_clocks 6>;
-			assigned-clock-rates = <150000000>;
 
 			ports {
 				#address-cells = <1>;
@@ -157,27 +156,13 @@
 			};
 		};
 
-		syscon: syscon@1c00000 {
-			compatible = "allwinner,sun8i-v3s-system-controller",
-					"allwinner,sun8i-h3-system-control",
-					"syscon";
+		syscon: system-control@1c00000 {
+			compatible = "allwinner,sun8i-v3s-system-control",
+				     "allwinner,sun8i-h3-system-control";
 			reg = <0x01c00000 0xd0>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges;
-
-			sram_c: sram@1d00000 {
-				compatible = "mmio-sram";
-				reg = <0x01d00000 0x80000>;
-				#address-cells = <1>;
-				#size-cells = <1>;
-				ranges = <0 0x01d00000 0x80000>;
-
-				ve_sram: sram-section@0 {
-					compatible = "allwinner,sun8i-v3s-sram-c", "allwinner,sun4i-a10-sram-c1";
-					reg = <0x000000 0x80000>;
-				};
-			};
 		};
 
 		nmi_intc: interrupt-controller@1c000d0 {
@@ -198,30 +183,6 @@
 			#dma-cells = <1>;
 		};
 
-		cedarx: video-codec@1c0e000 {
-			compatible = "allwinner,sun8i-v3-cedar";
-			reg = <0x01c0e000 0x1000>;
-			clocks = <&ccu CLK_BUS_VE>, <&ccu CLK_VE>, <&ccu CLK_DRAM_VE>;
-			clock-names = "ahb", "mod", "ram";
-			resets = <&ccu RST_BUS_VE>;
-			interrupts = <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>;
-			allwinner,sram = <&ve_sram 1>;
-			status = "okay";
-		};
-				
-		ion: ion {
-			compatible = "allwinner,sunxi-ion";
-			status = "okay";
-			heap_cma@0{
-				compatible = "allwinner,cma";
-				heap-name  = "cma";
-				heap-id    = <0x4>;
-				heap-base  = <0x0>;
-				heap-size  = <0x0>;
-				heap-type  = "ion_cma";
-			};
-		};
-
 		tcon0: lcd-controller@1c0c000 {
 			compatible = "allwinner,sun8i-v3s-tcon";
 			reg = <0x01c0c000 0x1000>;
@@ -230,7 +191,7 @@
 				 <&ccu CLK_TCON0>;
 			clock-names = "ahb",
 				      "tcon-ch0";
-			clock-output-names = "tcon-pixel-clock";
+			clock-output-names = "tcon-data-clock";
 			#clock-cells = <0>;
 			resets = <&ccu RST_BUS_TCON0>;
 			reset-names = "lcd";
@@ -255,6 +216,7 @@
 				};
 			};
 		};
+
 
 		mmc0: mmc@1c0f000 {
 			compatible = "allwinner,sun7i-a20-mmc";
@@ -357,29 +319,33 @@
 			#phy-cells = <1>;
 		};
 
-		ehci0: usb@1c1a000 {
+		ehci: usb@1c1a000 {
 			compatible = "allwinner,sun8i-v3s-ehci", "generic-ehci";
 			reg = <0x01c1a000 0x100>;
 			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_EHCI0>, <&ccu CLK_BUS_OHCI0>;
 			resets = <&ccu RST_BUS_EHCI0>, <&ccu RST_BUS_OHCI0>;
+			phys = <&usbphy 0>;
+			phy-names = "usb";
 			status = "disabled";
 		};
 
-		ohci0: usb@1c1a400 {
+		ohci: usb@1c1a400 {
 			compatible = "allwinner,sun8i-v3s-ohci", "generic-ohci";
 			reg = <0x01c1a400 0x100>;
 			interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_EHCI0>, <&ccu CLK_BUS_OHCI0>,
 				 <&ccu CLK_USB_OHCI0>;
 			resets = <&ccu RST_BUS_EHCI0>, <&ccu RST_BUS_OHCI0>;
+			phys = <&usbphy 0>;
+			phy-names = "usb";
 			status = "disabled";
 		};
 
 		ccu: clock@1c20000 {
 			compatible = "allwinner,sun8i-v3s-ccu";
 			reg = <0x01c20000 0x400>;
-			clocks = <&osc24M>, <&rtc 0>;
+			clocks = <&osc24M>, <&rtc CLK_OSC32K>;
 			clock-names = "hosc", "losc";
 			#clock-cells = <1>;
 			#reset-cells = <1>;
@@ -400,7 +366,8 @@
 			reg = <0x01c20800 0x400>;
 			interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&ccu CLK_BUS_PIO>, <&osc24M>, <&rtc 0>;
+			clocks = <&ccu CLK_BUS_PIO>, <&osc24M>,
+				 <&rtc CLK_OSC32K>;
 			clock-names = "apb", "hosc", "losc";
 			gpio-controller;
 			#gpio-cells = <3>;
@@ -427,6 +394,8 @@
 				function = "csi";
 			};
 
+			// This not present in sun8i.v3s.dtsi in Linux 6.18; not sure why.
+			// We leave it here for now (2026-01-23)
 			emac_rgmii_pins: emac-rgmii-pins {
 				pins = "PD0", "PD1", "PD2", "PD3", "PD4",
 				       "PD5", "PD7", "PD8", "PD9", "PD10",
@@ -452,9 +421,24 @@
 				function = "i2c1";
 			};
 
+			/omit-if-no-ref/
+			lcd_rgb666_pe_pins: lcd-rgb666-pe-pins {
+				pins = "PE0", "PE1", "PE2", "PE3", "PE4", "PE5",
+				       "PE6", "PE7", "PE8", "PE9", "PE10", "PE11",
+				       "PE12", "PE13", "PE14", "PE15", "PE16", "PE17",
+				       "PE18", "PE19", "PE23", "PE24";
+				function = "lcd";
+			};
+
 			uart0_pb_pins: uart0-pb-pins {
 				pins = "PB8", "PB9";
 				function = "uart0";
+			};
+
+			/omit-if-no-ref/
+			uart1_pe_pins: uart1-pe-pins {
+				pins = "PE21", "PE22";
+				function = "uart1";
 			};
 
 			uart2_pins: uart2-pins {
@@ -476,6 +460,18 @@
 				function = "mmc1";
 				drive-strength = <30>;
 				bias-pull-up;
+			};
+
+			/omit-if-no-ref/
+			pwm0_pin: pwm0-pin {
+				pins = "PB4";
+				function = "pwm0";
+			};
+
+			/omit-if-no-ref/
+			pwm1_pin: pwm1-pin {
+				pins = "PB5";
+				function = "pwm1";
 			};
 
 			spi0_pins: spi0-pins {
@@ -503,8 +499,7 @@
 		pwm: pwm@1c21400 {
 			compatible = "allwinner,sun8i-v3s-pwm",
 				     "allwinner,sun7i-a20-pwm";
-			//reg = <0x01c21400 0xc>;	// mainline 5.19.3 version
-			reg = <0x01c21400 0x400>;
+			reg = <0x01c21400 0xc>;
 			clocks = <&osc24M>;
 			#pwm-cells = <3>;
 			status = "disabled";
@@ -544,7 +539,7 @@
 			reg-io-width = <4>;
 			clocks = <&ccu CLK_BUS_UART0>;
 			dmas = <&dma 6>, <&dma 6>;
-			dma-names = "rx", "tx";
+			dma-names = "tx", "rx";
 			resets = <&ccu RST_BUS_UART0>;
 			status = "disabled";
 		};
@@ -557,7 +552,7 @@
 			reg-io-width = <4>;
 			clocks = <&ccu CLK_BUS_UART1>;
 			dmas = <&dma 7>, <&dma 7>;
-			dma-names = "rx", "tx";
+			dma-names = "tx", "rx";
 			resets = <&ccu RST_BUS_UART1>;
 			status = "disabled";
 		};
@@ -570,7 +565,7 @@
 			reg-io-width = <4>;
 			clocks = <&ccu CLK_BUS_UART2>;
 			dmas = <&dma 8>, <&dma 8>;
-			dma-names = "rx", "tx";
+			dma-names = "tx", "rx";
 			resets = <&ccu RST_BUS_UART2>;
 			pinctrl-0 = <&uart2_pins>;
 			pinctrl-names = "default";
@@ -596,8 +591,6 @@
 			interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_I2C1>;
 			resets = <&ccu RST_BUS_I2C1>;
-			pinctrl-names = "default";
-			pinctrl-0 = <&i2c1_pe_pins>;
 			status = "disabled";
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -643,12 +636,6 @@
 						resets = <&ccu RST_BUS_EPHY>;
 					};
 				};
-
-				external_mdio: mdio@2 {
-					reg = <2>;
-					#address-cells = <1>;
-					#size-cells = <0>;
-				};
 			};
 		};
 
@@ -684,7 +671,7 @@
 			reg = <0x01cb4000 0x3000>;
 			interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&ccu CLK_BUS_CSI>,
-				 <&ccu CLK_CSI1_SCLK>,
+				 <&ccu CLK_CSI_SCLK>,
 				 <&ccu CLK_DRAM_CSI>;
 			clock-names = "bus", "mod", "ram";
 			resets = <&ccu RST_BUS_CSI>;
@@ -706,4 +693,3 @@
 		};
 	};
 };
-
