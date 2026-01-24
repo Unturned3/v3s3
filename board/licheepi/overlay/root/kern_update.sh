@@ -4,8 +4,8 @@
 # for development purposes
 
 # replace with values appropriate for your setup
-port=2222
-host=richard@192.168.123.11
+port=22
+host=richard@192.168.1.151
 zImage_path='~/outbu/zImage'
 
 mkdir -p /boot
